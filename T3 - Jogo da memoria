@@ -1,0 +1,174 @@
+#include <iostream>
+#include <locale.h>
+#include <time.h>
+#define TAM  4 //Constante do tamanho da matriz
+
+using namespace std;
+
+int main() {
+	setlocale(LC_ALL, "Portuguese");
+	srand(time(NULL));
+
+	int opcaoDoMenu = 0; //Declarando e inicializando os valores e matrizes
+
+	int matrizDeJogo[TAM][TAM] = {1,4,5,2,7,2,8,7,3,6,1,4,6,5,3,8};
+	int matrizDeGabarito[TAM][TAM] = {};
+	int matrizDeVerificacao[TAM][TAM] = {};
+
+	//Contadores
+	int numeroDoTipoDeMatriz = 0;
+	int numeroDeAcertos = 0;
+	int numeroDeTentativas = 0;
+
+	int posicaoDaLinhaDaTentativa1 = 0;
+	int posicaoDaColunaDaTentativa1 = 0;
+	int posicaoDaLinhaDaTentativa2 = 0;
+	int posicaoDaColunaDaTentativa2 = 0;
+
+	while (opcaoDoMenu != 3) {
+		cout << " \nSelecione uma op��o: \n\n 1-Jogar\n\n 2-Sobre\n\n 3-Fechar Jogo\n\n Escolha: ";
+		cin >> opcaoDoMenu;
+		system("cls");
+
+		switch (opcaoDoMenu) {
+		case 1:// Opc�o da Matriz
+
+			numeroDoTipoDeMatriz = rand() % 4;// Escolha aleat�ria do tipo de matriz
+
+			switch (numeroDoTipoDeMatriz) {
+			case 0:// Sem modifica��o
+				for (int i = 0; i < TAM; i++) {
+					for (int j = 0; j < TAM; j++) {
+						matrizDeGabarito[i][j] = matrizDeJogo[i][j];
+					}
+				}
+				break;
+			case 1:// Transposta
+				for (int i = 0; i < TAM; i++) {
+					for (int j = 0; j < TAM; j++) {
+						matrizDeGabarito[j][i] = matrizDeJogo[i][j];
+					}
+				}
+				break;
+			case 2:// Invertida por linha
+				for (int i = 0; i < TAM; i++) {
+					for (int j = 0; j < TAM; j++) {
+						int numeroTemporario = matrizDeJogo[i][j];
+						matrizDeGabarito[i][j] = matrizDeJogo[TAM - i - 1][j];
+					}
+				}
+				break;
+			case 3:// Invertida por coluna
+				for (int i = 0; i < TAM; i++) {
+					for (int j = 0; j < TAM; j++) {
+						int numeroTemporario = matrizDeJogo[i][j];
+						matrizDeGabarito[i][j] = matrizDeJogo[i][TAM - j - 1];
+					}
+				}
+				break;
+			}
+
+			for (int i = 0; i < TAM; i++) {//Configurar a matriz original para 0//
+				for (int j = 0; j < TAM; j++) {
+					matrizDeJogo[i][j] = 0;
+				}
+			}
+
+			// Print para ver o jogo e testar r�pido
+
+			cout << "\tJogo   \n\n   ";
+			for (int i = 0; i < TAM; i++) {
+				for (int j = 0; j < TAM; j++) {
+					cout << "  " << matrizDeGabarito[i][j];
+				}
+				cout << "\n   ";
+			}
+
+			while (numeroDeAcertos < (TAM * 2) && numeroDeTentativas < (TAM * 6)) {//Loop do jogo enquanto n�o tiver acertado todos os pares (8), nem errado o n�mero de tentativas (24)
+				cout << "\n Voc� fez " << numeroDeTentativas << " tentativa(s) de 24 poss�veis e possui " << numeroDeAcertos << " acerto(s).\n";//Placar
+				cout << "\n\t   Jogo  \n   ";
+				for (int i = 0; i < TAM; i++) { //Loop para imprimir a matriz
+					for (int j = 0; j < TAM; j++) {
+						cout << "   " << matrizDeJogo[i][j];
+					}
+					cout << "\n   ";
+				}
+
+				//Interface de escolha das posi��es linha(i) e coluna(j)
+				cout << "\n Selecione a linha(i) e a coluna (j) para virar duas posi��es dentre os n�meros 1 a 4: \n Primeira posi��o de Linha: ";
+				cin >> posicaoDaLinhaDaTentativa1;//i
+				cout << " Primeira posi��o de Coluna: ";
+				cin >> posicaoDaColunaDaTentativa1;//j
+				cout << " Segunda posi��o de linha: ";
+				cin >> posicaoDaLinhaDaTentativa2;//i
+				cout << " Segunda posi��o de Coluna: ";
+				cin >> posicaoDaColunaDaTentativa2;//j
+
+				//Ajustando o indice da posi��o relativa para o indice em c++, come�ando em [0]
+				posicaoDaLinhaDaTentativa1--;
+				posicaoDaColunaDaTentativa1--;
+				posicaoDaLinhaDaTentativa2--;
+				posicaoDaColunaDaTentativa2--;
+
+				numeroDeTentativas++; //Aumentando o n�mero de tentativas em 1
+
+				matrizDeJogo[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1] = matrizDeGabarito[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1];
+				matrizDeJogo[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2] = matrizDeGabarito[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2];
+				system("cls");
+
+
+				if ((posicaoDaLinhaDaTentativa1 == posicaoDaLinhaDaTentativa2 && posicaoDaColunaDaTentativa1 == posicaoDaColunaDaTentativa2) ||
+					(matrizDeVerificacao[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2] == matrizDeGabarito[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2] || //Verifique se o jogador fez um jogada inv�lida
+						matrizDeVerificacao[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1] == matrizDeGabarito[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1])) {
+					cout << "\n Jogada Inv�lida!";
+				}
+				else if (matrizDeGabarito[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1] == matrizDeGabarito[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2]) {//Verifique se o jogador acertou o par de n�meros
+					matrizDeVerificacao[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1] = matrizDeJogo[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1];
+					matrizDeVerificacao[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2] = matrizDeJogo[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2];
+
+					numeroDeAcertos++; //Aumentando o n�mero do contador de acertos em 1
+					cout << "\n Acertou!" << endl;
+				}
+				else {
+					cout << "\n  Errou!\n\n  Jogo  \n\n  ";
+
+					for (int i = 0; i < TAM; i++) { //Loop para imprimir a matriz
+						for (int j = 0; j < TAM; j++) {
+							cout << "  " << matrizDeJogo[i][j];
+						}
+						cout << "\n  ";
+					}
+					cout << "\n  ";
+
+					//As posi��es escolhidas anteriormente voltam a aparecer como 0 (as pe�as se escondem)
+					matrizDeJogo[posicaoDaLinhaDaTentativa1][posicaoDaColunaDaTentativa1] = 0;
+					matrizDeJogo[posicaoDaLinhaDaTentativa2][posicaoDaColunaDaTentativa2] = 0;
+				}
+
+				system("pause");
+				system("cls");
+			}
+
+			if (numeroDeAcertos == (TAM * 2)) {
+				cout << " Parab�ns, voc� venceu o jogo! \n ";
+			}
+			else {
+				cout << " Voc� perdeu, tente novamente! \n";
+			}
+
+			system("pause");
+			system("cls");
+
+		case 2:
+			cout << " Jogo feito pelos estudantes da Universidade do Vale do Itaja� Cau� Ribas e Vinicius Setti";
+			cout << "\n\n Atividade da disciplina de Algoritmos e Programa��o do professor Rafael Ballottin Martins" << "\n\n";
+		case 3:
+			cout << "\n Voc� fechou o jogo! \n ";
+			system("pause");
+			break;
+		default:
+			cout << " Op��o inv�lida! \n\n";
+		}
+	}
+	return 0;
+}
